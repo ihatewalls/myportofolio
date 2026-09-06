@@ -178,7 +178,13 @@ h1, .brand {
 }
 #experience_details {
   border: 1px solid #000000;
-  border-radius: 8px;
+  padding: 0.5rem;
+  background-color: #ffffff;
+}
+#skills_details {
+  border: 1px solid #000000;
+  border-top: none;
+  margin-top: -1px;
   padding: 0.5rem;
   background-color: #ffffff;
 }
@@ -191,7 +197,19 @@ h1, .brand {
   width: 100%;
   font-size: 1.5rem;
 }
-#experience_summary.hover {
+#experience_summary:hover {
+    cursor: pointer;
+}
+#skills_summary {
+  font-family: "Roboto Black";
+  border: 1px solid #000000;
+  padding: 0.5rem;
+  background-color: #ffffff;
+  max-width: 960px;
+  width: 100%;
+  font-size: 1.5rem;
+}
+#skills_summary:hover {
     cursor: pointer;
 }
 .inner {
