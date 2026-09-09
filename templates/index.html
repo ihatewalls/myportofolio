@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ridho - Portfolio</title>
+    <title>{{ name }} - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -12,9 +12,10 @@
 <body>
     <header class="site-header">
         <div class="container">
-            <a href="#profile" class="brand">Ridho</a>
+            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
             <nav>
-                <a href="#profile">Profile</a>
+                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_experience' %}">Experience</a>
             </nav>
         </div>
     </header>
@@ -24,22 +25,22 @@
             <div class="container hero-grid">
                 <div class="hero-identity">
                     <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
-                    <h1>Musthofa Ridho</h1>
+                    <h1>{{ name }}</h1>
                 </div>
                 <div class="hero-photo">
                     <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/melayang.jpg" alt="Photo of Ridho">
+                    <img class="avatar" src="/static/img/melayang.jpg" alt="Photo of {{ name }}">
                 </div>
                 <div class="hero-details">
-                    <p class="bio">CS Student at Fasilkom UI. Love CTFs but not that good.</p>
+                    <p class="bio">{{ bio }}</p>
                     <dl class="meta-list">
                         <div class="meta-row">
                             <dt>NPM</dt>
-                            <dd>2506606212</dd>
+                            <dd>{{ npm }}</dd>
                         </div>
                         <div class="meta-row">
                             <dt>Program</dt>
-                            <dd>S1 Ilmu Komputer</dd>
+                            <dd>{{ study_program }}</dd>
                         </div>
                     </dl>
                     <div class="social-links">
@@ -50,31 +51,8 @@
                 </div>
             </div>
         </section>
-        <section id="experience">
+        <section id="skills">
             <div class="container">
-                <details id="experience_details">
-                    <summary id="experience_summary">Experience</summary>
-                    <div class="inner">
-                        <h3> Teaching Assistant for Pengantar Sistem Digital </h3>
-                        <p> Universitas Indonesia 2026-now </p>
-                    </div>
-                    <div class="inner">
-                        <h3> Mentor </h3>
-                        <p> DDP0 2026-2026 </p>
-                    </div>
-                    <div class="inner">
-                        <h3> Member </h3>
-                        <p> Ristek Netsos 2026-now </p>
-                    </div>
-                    <div class="inner">
-                        <h3> 1st Place </h3>
-                        <p> FindIT CTF 2026 </p>
-                    </div>
-                    <div class="inner">
-                        <h3> Finalist </h3>
-                        <p> TechFest CTF 2026 </p>
-                    </div>
-                </details>
                 <details id="skills_details">
                     <summary id="skills_summary">Skills</summary>
                     <div class="inner">
@@ -97,7 +75,7 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 Ridho. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
     </footer>
 </body>
