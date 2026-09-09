@@ -171,6 +171,7 @@ h1, .brand {
     font-size: 0.85rem;
     border-top: 1px solid var(--line);
 }
+/*
 #skills {
   justify-content: left;
   align-items: left;
@@ -203,6 +204,7 @@ h1, .brand {
   width: 100%;
   font-size: 1rem;
 }
+*/
 @media (max-width: 600px) {
     .hero-grid {
         grid-template-columns: 1fr;
