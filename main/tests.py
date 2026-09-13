@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from main.models import Experience
+from main.models import Experience, Skill
 
 
 class MainTest(TestCase):
@@ -12,6 +12,11 @@ class MainTest(TestCase):
             description="Help students understand web development.",
             category="part-time",
         )
+        self.skill = Skill.objects.create(
+            title="Python",
+            description="Understands Advanced Python Topics",
+            category="programming-language",
+        )
 
     def test_main_url_is_accessible(self):
         response = self.client.get(reverse("main:show_main"))
@@ -20,6 +25,7 @@ class MainTest(TestCase):
         self.assertTemplateUsed(response, "index.html")
         self.assertNotContains(response, self.experience.title)
         self.assertContains(response, f'href="{reverse("main:show_experience")}"')
+        self.assertContains(response, f'href="{reverse("main:show_skill")}"')
 
     def test_nonexistent_page_returns_404(self):
         response = self.client.get("/a-page-that-does-not-exist/")
@@ -56,3 +62,23 @@ class MainTest(TestCase):
         self.assertFalse(self.experience.is_ongoing)
         self.assertContains(response, "Completed")
         self.assertNotContains(response, "Ongoing")
+
+    def test_skill_model(self):
+        self.assertEqual(str(self.skill), "Python")
+        self.assertEqual(self.skill.category, "programming-language")
+
+    def test_skill_page(self):
+        response = self.client.get(reverse("main:show_skill"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "skill.html")
+        self.assertContains(response, self.skill.title)
+        self.assertContains(response, self.skill.description)
+        self.assertContains(response, "Programming Language")
+        self.assertContains(response, f'href="{reverse("main:show_main")}"')
+
+    def test_empty_skill_page(self):
+        Skill.objects.all().delete()
+        response = self.client.get(reverse("main:show_skill"))
+
+        self.assertContains(response, "No skill has been added yet.")
