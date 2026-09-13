@@ -223,7 +223,7 @@ h1, .brand {
     }
     
 }
-.experience-section {
+.universal-section {
     padding: 4rem 0;
     border-top: 1px solid var(--line);
 }
@@ -236,37 +236,37 @@ h1, .brand {
     text-transform: uppercase;
 }
 
-.experience-section h1 {
+.universal-section h1 {
     margin: 0.4rem 0 1.5rem;
     font-size: 2rem;
 }
 
-.experience-grid {
+.universal-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1rem;
 }
 
-.experience-card {
+.universal-card {
     padding: 1.25rem;
     background-color: #fff;
     border: 1px solid var(--line);
     border-radius: var(--radius);
 }
 
-.experience-category {
+.universal-category {
     color: var(--accent-dark);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
-.experience-card h2 {
+.universal-card h2 {
     margin: 0.5rem 0;
     font-size: 1.25rem;
 }
 
-.experience-description,
+.universal-description,
 .empty-state {
     color: var(--text-muted);
 }

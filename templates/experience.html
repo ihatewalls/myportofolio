@@ -22,19 +22,19 @@
     </header>
 
     <main>
-        <section class="experience-section" id="experience">
+        <section class="universal-section" id="experience">
             <div class="container">
                 <p class="section-kicker">My journey so far</p>
                 <h1>Experience</h1>
 
-                <div class="experience-grid">
+                <div class="universal-grid">
                     {% for experience in experience_list %}
-                        <article class="experience-card">
-                            <span class="experience-category">
+                        <article class="universal-card">
+                            <span class="universal-category">
                                 {{ experience.get_category_display }}
                             </span>
                             <h2>{{ experience.title }}</h2>
-                            <p class="experience-description">
+                            <p class="universal-description">
                                 {{ experience.description }}
                             </p>
 

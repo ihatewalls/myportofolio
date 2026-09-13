@@ -22,19 +22,19 @@
     </header>
 
     <main>
-        <section class="skill-section" id="skill">
+        <section class="universal-section" id="skill">
             <div class="container">
                 <p class="section-kicker">What I've Got</p>
                 <h1>Skills</h1>
 
-                <div class="skill-grid">
+                <div class="universal-grid">
                     {% for skill in skill_list %}
-                        <article class="skill-card">
-                            <span class="skill-category">
+                        <article class="universal-card">
+                            <span class="universal-category">
                                 {{ skill.get_category_display }}
                             </span>
                             <h2>{{ skill.title }}</h2>
-                            <p class="skill-description">
+                            <p class="universal-description">
                                 {{ skill.description }}
                             </p>
                         </article>
