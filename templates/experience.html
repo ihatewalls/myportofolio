@@ -14,6 +14,11 @@
         <div class="container">
             <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
             <nav>
+                <p> Dark Mode </p>
+                <label class="switch">
+                  <input type="checkbox" id="darkmode">
+                  <span class="slider"></span>
+                </label>
                 <a href="{% url 'main:show_main' %}">Profile</a>
                 <a href="{% url 'main:show_experience' %}">Experience</a>
                 <a href="{% url 'main:show_skill' %}">Skills</a>
@@ -59,5 +64,6 @@
             <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
     </footer>
+<script src="/static/js/dark_mode.js"></script>
 </body>
 </html>
