@@ -20,10 +20,7 @@ body {
     background-color: var(--paper);
     line-height: 1.6;
 }
-.dark-mode {
-    color: var(--paper);
-    background-color: var(--ink);
-}
+
 h1, .brand {
     font-family: "Space Grotesk", -apple-system, sans-serif;
 }
@@ -325,4 +322,21 @@ input:focus + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+body.dark-mode {
+    color: var(--paper);
+    background-color: var(--ink);
+}
+body.dark-mode .site-header nav a{
+    color: var(--paper);
+}
+body.dark-mode .site-header a{
+    color: var(--paper);
+}
+body.dark-mode .social-link{
+    color: var(--ink);
+    background-color: var(--paper);
+}
+body.dark-mode .universal-card{
+    background-color: var(--ink);
 }
