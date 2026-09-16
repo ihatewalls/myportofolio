@@ -1,0 +1,43 @@
+<p class="universal-status">
+    <button type="button"
+            class="button button-danger"
+            popovertarget="delete-skill-{{ skill.id }}"
+            aria-label="Hapus {{ skill.title }}"
+            title="Hapus proyek">
+        Hapus Proyek
+    </button>
+</p>
+<div id="delete-skill-{{ skill.id }}"
+     class="universal-delete-model"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="delete-universal-title-{{ skill.id }}">
+    <button type="button"
+            class="universal-delete-modal__backdrop"
+            popovertarget="delete-universal-{{ skill.id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup konfirmasi hapus"></button>
+    <div class="universal-delete-modal__content">
+        <button type="button"
+                class="universal-delete-modal__close"
+                popovertarget="delete-universal-{{ skill.id }}"
+                popovertargetaction="hide"
+                aria-label="Tutup konfirmasi hapus">×</button>
+        <h2 id="delete-universal-title-{{ skill.id }}">Hapus Projek?</h2>
+        <p>
+            Apakah Anda yakin ingin menghapus
+            <strong>{{ skill.title }}</strong>?
+        </p>
+        <div class="universal-delete-modal__actions">
+            <button type="button"
+                    class="button button-secondary"
+                    popovertarget="delete-universal-{{ skill.id }}"
+                    popovertargetaction="hide">Batal</button>
+            <form method="post" action="{% url 'main:delete_skill' skill.id %}">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>

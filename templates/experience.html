@@ -1,31 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Experience - {{ name }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
-            <nav>
-                <p> Dark Mode </p>
-                <label class="switch">
-                  <input type="checkbox" id="darkmode">
-                  <span class="slider"></span>
-                </label>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_experience' %}">Experience</a>
-                <a href="{% url 'main:show_skill' %}">Skills</a>
-            </nav>
-        </div>
-    </header>
-
+    {% extends 'base.html' %}
+    {% block content %}
     <main>
         <section class="universal-section" id="experience">
             <div class="container">
@@ -44,9 +18,9 @@
                             </p>
 
                             {% if experience.is_ongoing %}
-                                <p class="experience-status">Ongoing</p>
+                                <p class="universal-status">Ongoing</p>
                             {% else %}
-                                <p class="experience-status">Completed</p>
+                                <p class="universal-status">Completed</p>
                             {% endif %}
                         </article>
                     {% empty %}
@@ -58,12 +32,4 @@
             </div>
         </section>
     </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-        </div>
-    </footer>
-<script src="/static/js/dark_mode.js"></script>
-</body>
-</html>
+{% endblock content %}
