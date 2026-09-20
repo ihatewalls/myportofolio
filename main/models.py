@@ -21,7 +21,6 @@ class Experience(models.Model):
     category = models.CharField(
         max_length=20,
         choices=EXPERIENCE_CHOICES,
-        default="full-time",
     )
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateTimeField(auto_now_add=True)
