@@ -36,6 +36,11 @@
                             <div class="universal-card-actions">
                                 <div class="universal-actions">
                                     {% include "components/skill_delete_model.html" with universal=universal %}
+                                    <a href="{% url 'main:edit_skills' skill_id=skill.id %}"
+                                        class="button universal-add-button">
+                                        <span aria-hidden="true">+</span>
+                                        Edit Skill
+                                    </a>
                                 </div>
                             </div>
                         </article>
