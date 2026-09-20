@@ -42,6 +42,13 @@
                             <div class="universal-card-actions">
                                 <div class="universal-actions">
                                     {% include "components/experience_delete_model.html" with universal=universal %}
+                                    <p class="universal-status">
+                                        <a href="{% url 'main:edit_experience' experience_id=experience.id %}"
+                                            class="button universal-add-button">
+                                            <span aria-hidden="true">+</span>
+                                            Edit Experience
+                                        </a>
+                                    </p>
                                 </div>
                             </div>
                         </article>
