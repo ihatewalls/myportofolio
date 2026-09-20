@@ -136,3 +136,19 @@ def edit_experience(request, experience_id):
         "experience": experience,
     }
     return render(request, "experience_edit_form.html", context)
+
+def edit_skills(request, skill_id):
+    skill = get_object_or_404(Skill, pk=skill_id)
+    form = SkillForm(request.POST or None, instance=skill)
+    
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Changes have been saved!")
+        return redirect("main:show_skill")
+
+    context = {
+        "name": "Ridho",
+        "form": form,
+        "skill": skill,
+    }
+    return render(request, "skill_edit_form.html", context)
