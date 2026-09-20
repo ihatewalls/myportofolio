@@ -47,6 +47,10 @@ class MainTest(TestCase):
         self.assertContains(response, "Part-Time")
         self.assertContains(response, "Ongoing")
         self.assertContains(response, f'href="{reverse("main:show_main")}"')
+        self.assertContains(response, f'href="{reverse("main:create_experience")}"')
+        self.assertContains(response, f'href="{reverse("main:show_experience")}"')
+        self.assertContains(response, f'href="{reverse("main:edit_experience", kwargs={"experience_id":self.experience.id})}"')
+        self.assertContains(response, f'action="{reverse("main:delete_experience", kwargs={"experience_id":self.experience.id})}"')
 
     def test_empty_experience_page(self):
         Experience.objects.all().delete()
@@ -76,9 +80,64 @@ class MainTest(TestCase):
         self.assertContains(response, self.skill.description)
         self.assertContains(response, "Programming Language")
         self.assertContains(response, f'href="{reverse("main:show_main")}"')
+        self.assertContains(response, f'href="{reverse("main:create_skill")}"')
+        self.assertContains(response, f'href="{reverse("main:show_skill")}"')
+        self.assertContains(response, f'href="{reverse("main:edit_skills", kwargs={"skill_id":self.skill.id})}"')
+        self.assertContains(response, f'action="{reverse("main:delete_skill", kwargs={"skill_id":self.skill.id})}"')
 
     def test_empty_skill_page(self):
         Skill.objects.all().delete()
         response = self.client.get(reverse("main:show_skill"))
 
-        self.assertContains(response, "No skill has been added yet.")
+        self.assertContains(response, "Belum ada skill yang ditambahkan.")
+        
+    def test_skill_create_page(self):
+        response = self.client.get(reverse("main:create_skill"))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "skills_form.html")
+        self.assertContains(response, "Nama Skill")
+        self.assertContains(response, "Deskripsi Skill")
+        self.assertContains(response, "Kategori Skill")
+        self.assertContains(response, f'href="{reverse("main:show_skill")}"')
+        self.assertContains(response, f'action="{reverse("main:create_skill")}"')
+        
+    def test_experience_create_page(self):
+        response = self.client.get(reverse("main:create_experience"))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "experience_form.html")
+        self.assertContains(response, "Nama Experience")
+        self.assertContains(response, "Deskripsi Experience")
+        self.assertContains(response, "Kategori Experience")
+        self.assertContains(response, f'href="{reverse("main:show_experience")}"')
+        self.assertContains(response, f'action="{reverse("main:create_experience")}"')
+    
+    def test_skill_edit_page(self):
+        response = self.client.get(reverse("main:edit_skills", kwargs={"skill_id":self.skill.id}))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "skill_edit_form.html")
+        self.assertContains(response, "Nama Skill")
+        self.assertContains(response, "Deskripsi Skill")
+        self.assertContains(response, "Kategori Skill")
+        self.assertContains(response, self.skill.title)
+        self.assertContains(response, self.skill.description)
+        self.assertContains(response, self.skill.category)
+        self.assertContains(response, f'href="{reverse("main:show_skill")}"')
+        self.assertContains(response, f'action="{reverse("main:edit_skills", kwargs={"skill_id":self.skill.id})}"')
+        
+    def test_experience_edit_page(self):
+        response = self.client.get(reverse("main:edit_experience", kwargs={"experience_id":self.experience.id}))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "experience_edit_form.html")
+        self.assertContains(response, "Nama Experience")
+        self.assertContains(response, "Deskripsi Experience")
+        self.assertContains(response, "Kategori Experience")
+        self.assertContains(response, self.experience.title)
+        self.assertContains(response, self.experience.description)
+        self.assertContains(response, self.experience.category)
+        self.assertContains(response, f'href="{reverse("main:show_experience")}"')
+        self.assertContains(response, f'action="{reverse("main:edit_experience", kwargs={"experience_id":self.experience.id})}"')
+        
