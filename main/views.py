@@ -108,3 +108,13 @@ def get_experience_json(request):
 
     skills_json = serializers.serialize("json", experience)
     return HttpResponse(skills_json, content_type="application/json")
+
+def delete_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+
+    if request.method == "POST":
+        experience.delete()
+        messages.success(request, "Experience berhasil dihapus!")
+        return redirect("main:show_experience")
+
+    return redirect("main:show_experience")
