@@ -140,4 +140,48 @@ class MainTest(TestCase):
         self.assertContains(response, self.experience.category)
         self.assertContains(response, f'href="{reverse("main:show_experience")}"')
         self.assertContains(response, f'action="{reverse("main:edit_experience", kwargs={"experience_id":self.experience.id})}"')
+    
+    def test_skill_creation(self):
+        Skill.objects.all().delete()
+        request = self.client.post(reverse("main:create_skill"), {"title": "dummyTitle", "description": "dummyDescription", "category": "language"})
+        response = self.client.get(reverse("main:show_skill"))
+        
+        self.assertEqual(request.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "dummyTitle")
+        self.assertContains(response, "dummyDescription")
+        self.assertContains(response, "Language")
+        
+    def test_experience_creation(self):
+        Experience.objects.all().delete()
+        request = self.client.post(reverse("main:create_experience"), {"title": "dummyTitle", "description": "dummyDescription", "category": "competition"})
+        response = self.client.get(reverse("main:show_experience"))
+        
+        self.assertEqual(request.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "dummyTitle")
+        self.assertContains(response, "dummyDescription")
+        self.assertContains(response, "Competition")
+    
+    def test_skill_edit(self):
+        request = self.client.post(reverse("main:edit_skills", kwargs={"skill_id":self.skill.id}), {"title": "dummyTitle", "description": "dummyDescription", "category": "language"})
+        response = self.client.get(reverse("main:show_skill"))
+        
+        self.assertEqual(request.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "dummyTitle")
+        self.assertContains(response, "dummyDescription")
+        self.assertContains(response, "Language")
+        self.assertNotContains(response, "Programming Language")
+    
+    def test_experience_edit(self):
+        request = self.client.post(reverse("main:edit_experience", kwargs={"experience_id":self.experience.id}), {"title": "dummyTitle", "description": "dummyDescription", "category": "competition"})
+        response = self.client.get(reverse("main:show_experience"))
+        
+        self.assertEqual(request.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "dummyTitle")
+        self.assertContains(response, "dummyDescription")
+        self.assertContains(response, "Competition")
+        self.assertNotContains(response, "Part-Time")
         
