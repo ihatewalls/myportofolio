@@ -4,8 +4,25 @@
         <section class="universal-section" id="experience">
             <div class="container">
                 <p class="section-kicker">My journey so far</p>
-                <h1>Experience</h1>
-
+                <div class="universal-header">
+                    <h1>Experience</h1>
+                    <a href="{% url 'main:create_experience' %}"
+                       class="button universal-add-button">
+                        <span aria-hidden="true">+</span>
+                        Tambah Experience
+                    </a>
+                </div>
+                <form method="get"
+                      action="{% url 'main:show_experience' %}"
+                      class="universal-search">
+                    <input type="search"
+                           name="title"
+                           value="{{ title_query }}"
+                           placeholder="Cari berdasarkan nama experience"
+                           class="universal-search__input"
+                           aria-label="Cari berdasarkan nama experience">
+                    <button type="submit" class="button">Cari</button>
+                </form>
                 <div class="universal-grid">
                     {% for experience in experience_list %}
                         <article class="universal-card">
@@ -22,6 +39,11 @@
                             {% else %}
                                 <p class="universal-status">Completed</p>
                             {% endif %}
+                            <div class="universal-card-actions">
+                                <div class="universal-actions">
+                                    {% include "components/experience_delete_model.html" with universal=universal %}
+                                </div>
+                            </div>
                         </article>
                     {% empty %}
                         <p class="empty-state">
