@@ -18,9 +18,18 @@ def show_main(request):
 
 
 def show_experience(request):
+    json_response = get_experience_json(request)
+    
+    experiences = serializers.deserialize(
+            "json",
+            json_response.content.decode("utf-8"),
+        )
+    experiences = [experience.object for experience in experiences]
+    title_query = request.GET.get("title", "").strip()
     context = {
         "name": "Ridho",
-        "experience_list": Experience.objects.all(),
+        "experience_list": experiences,
+        "title": title_query,
     }
     return render(request, "experience.html", context)
 
@@ -89,3 +98,13 @@ def create_experience(request):
         "form": form,
     }
     return render(request, "experience_form.html", context)
+
+def get_experience_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experience = Experience.objects.all()
+
+    if title_query:
+        experience = experience.filter(title__icontains=title_query)
+
+    skills_json = serializers.serialize("json", experience)
+    return HttpResponse(skills_json, content_type="application/json")
