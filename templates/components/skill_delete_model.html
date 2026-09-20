@@ -15,7 +15,7 @@
      aria-labelledby="delete-universal-title-{{ skill.id }}">
     <button type="button"
             class="universal-delete-modal__backdrop"
-            popovertarget="delete-universal-{{ skill.id }}"
+            popovertarget="delete-skill-{{ skill.id }}"
             popovertargetaction="hide"
             aria-label="Tutup konfirmasi hapus"></button>
     <div class="universal-delete-modal__content">
@@ -32,7 +32,7 @@
         <div class="universal-delete-modal__actions">
             <button type="button"
                     class="button button-secondary"
-                    popovertarget="delete-universal-{{ skill.id }}"
+                    popovertarget="delete-skill-{{ skill.id }}"
                     popovertargetaction="hide">Batal</button>
             <form method="post" action="{% url 'main:delete_skill' skill.id %}">
                 {% csrf_token %}

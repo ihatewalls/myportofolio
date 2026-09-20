@@ -15,13 +15,13 @@
      aria-labelledby="delete-universal-title-{{ experience.id }}">
     <button type="button"
             class="universal-delete-modal__backdrop"
-            popovertarget="delete-universal-{{ experience.id }}"
+            popovertarget="delete-experience-{{ experience.id }}"
             popovertargetaction="hide"
             aria-label="Tutup konfirmasi hapus"></button>
     <div class="universal-delete-modal__content">
         <button type="button"
                 class="universal-delete-modal__close"
-                popovertarget="delete-universal-{{ experience.id }}"
+                popovertarget="delete-experience-{{ experience.id }}"
                 popovertargetaction="hide"
                 aria-label="Tutup konfirmasi hapus">×</button>
         <h2 id="delete-universal-title-{{ experience.id }}">Hapus Experience?</h2>
@@ -32,7 +32,7 @@
         <div class="universal-delete-modal__actions">
             <button type="button"
                     class="button button-secondary"
-                    popovertarget="delete-universal-{{ experience.id }}"
+                    popovertarget="delete-experience-{{ experience.id }}"
                     popovertargetaction="hide">Batal</button>
             <form method="post" action="{% url 'main:delete_experience' experience.id %}">
                 {% csrf_token %}
