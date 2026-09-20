@@ -1,4 +1,4 @@
-from main.models import Skill
+from main.models import Skill, Experience
 from django.forms import TextInput, Textarea, ModelForm, URLInput
 class SkillForm(ModelForm):
     class Meta:
@@ -34,3 +34,39 @@ class SkillForm(ModelForm):
                 }
             ),
         }
+class ExperienceForm(ModelForm):
+    class Meta:
+        model = Experience
+        fields = [
+            "title",
+            "description",
+            "category",
+        ]
+
+        labels = {
+            "title": "Nama Experience",
+            "description": "Deskripsi Experience",
+            "category": "Kategori Experience",
+        }
+
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Name of Experience",
+                    "maxlength": 255,
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Description of Experience",
+                    "rows": 3,
+                }
+            ),
+            "category": TextInput(
+                attrs={
+                    "placeholder": "Part-Time, Competition, Organization, etc.",
+                }
+            ),
+        }
+     
+
