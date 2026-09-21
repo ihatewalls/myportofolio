@@ -599,3 +599,8 @@ body.dark-mode .universal-card{
         text-align: center;
     }
 }
+body.dark-mode .universal-delete-modal__content {
+    background-color: var(--ink);
+    color: var(--paper);
+}
+
