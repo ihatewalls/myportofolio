@@ -6,11 +6,13 @@
                 <p class="section-kicker">What I've Got</p>
                 <div class="universal-header">
                     <h1>Skills</h1>
+                    {% if user.is_superuser %}
                     <a href="{% url 'main:create_skill' %}"
                        class="button universal-add-button">
                         <span aria-hidden="true">+</span>
                         Tambah Skill
                     </a>
+                    {% endif %}
                 </div>
                 <form method="get"
                       action="{% url 'main:show_skill' %}"
@@ -35,12 +37,14 @@
                             </p>
                             <div class="universal-card-actions">
                                 <div class="universal-actions">
+                                    {% if user.is_superuser %}
                                     {% include "components/skill_delete_model.html" with skill=skill %}
                                     <a href="{% url 'main:edit_skills' skill_id=skill.id %}"
                                         class="button universal-add-button">
                                         <span aria-hidden="true">+</span>
                                         Edit Skill
                                     </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </article>
