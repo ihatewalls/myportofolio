@@ -19,4 +19,9 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),
     path("logout/", logout_user, name="logout"),
+    path(
+    "experience/<uuid:experience_id>/star/",
+    toggle_star,
+    name="toggle_star",
+    ),
 ]
