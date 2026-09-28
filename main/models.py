@@ -1,8 +1,11 @@
 import uuid
 
 from django.db import models
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import AbstractUser
 
+class User(AbstractUser):
+    is_editor = models.BooleanField(default=False)
+    
 class Experience(models.Model):
     EXPERIENCE_CHOICES = [
         ("internship", "Internship"),
@@ -55,5 +58,4 @@ class Skill(models.Model):
 
     def __str__(self):
         return self.title
-
     

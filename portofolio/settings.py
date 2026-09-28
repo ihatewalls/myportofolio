@@ -153,3 +153,4 @@ MAILERS = {
 }
 
 CSRF_TRUSTED_ORIGINS = ["https://musthofa-ridho-myportofolio.pws.cs.ui.ac.id"]
+AUTH_USER_MODEL = 'main.User'
