@@ -225,3 +225,6 @@ def toggle_star(request, experience_id):
             experience.starred_by.add(request.user)
 
     return redirect("main:show_experience")
+
+def afk_page(request):
+    return render(request, "afk.html")

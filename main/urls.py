@@ -24,4 +24,5 @@ urlpatterns = [
     toggle_star,
     name="toggle_star",
     ),
+    path("afk/", afk_page, name="afk_page"),
 ]
