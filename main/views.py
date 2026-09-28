@@ -4,12 +4,12 @@ from django.contrib import messages
 from django.core import serializers
 from django.http import HttpResponse
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required  
 from django.core.exceptions import PermissionDenied   
 from django.shortcuts import get_object_or_404, redirect, render
 from main.models import Experience, Skill
-from main.forms import SkillForm, ExperienceForm
+from main.forms import SkillForm, ExperienceForm, UserForm
 import datetime
 
 def show_main(request):
@@ -62,7 +62,7 @@ def show_skill(request):
 
 @login_required(login_url="/login/")
 def create_skill(request):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.user.is_editor:
         raise PermissionDenied
     form = SkillForm(request.POST or None)
 
@@ -89,7 +89,7 @@ def get_skills_json(request):
 
 @login_required(login_url="/login/")
 def delete_skill(request, skill_id):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.user.is_editor:
         raise PermissionDenied
     skill = get_object_or_404(Skill, pk=skill_id)
 
@@ -102,7 +102,7 @@ def delete_skill(request, skill_id):
 
 @login_required(login_url="/login/")
 def create_experience(request):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.user.is_editor:
         raise PermissionDenied
     form = ExperienceForm(request.POST or None)
     
@@ -129,7 +129,7 @@ def get_experience_json(request):
 
 @login_required(login_url="/login/")
 def delete_experience(request, experience_id):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.user.is_editor:
         raise PermissionDenied
     experience = get_object_or_404(Experience, pk=experience_id)
 
@@ -142,7 +142,7 @@ def delete_experience(request, experience_id):
 
 @login_required(login_url="/login/")
 def edit_experience(request, experience_id):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.user.is_editor:
         raise PermissionDenied
     experience = get_object_or_404(Experience, pk=experience_id)
     form = ExperienceForm(request.POST or None, instance=experience)
@@ -161,7 +161,7 @@ def edit_experience(request, experience_id):
 
 @login_required(login_url="/login/")
 def edit_skills(request, skill_id):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.user.is_editor:
         raise PermissionDenied
     skill = get_object_or_404(Skill, pk=skill_id)
     form = SkillForm(request.POST or None, instance=skill)
@@ -179,7 +179,7 @@ def edit_skills(request, skill_id):
     return render(request, "skill_edit_form.html", context)
 
 def register(request):
-    form = UserCreationForm(request.POST or None)
+    form = UserForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
         form.save()

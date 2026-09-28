@@ -1,5 +1,7 @@
-from main.models import Skill, Experience
+from main.models import Skill, Experience, User
 from django.forms import TextInput, Textarea, ModelForm, URLInput
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
 class SkillForm(ModelForm):
     class Meta:
         model = Skill
@@ -68,5 +70,27 @@ class ExperienceForm(ModelForm):
                 }
             ),
         }
-     
+class UserForm(UserCreationForm):
+    editor_key = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput
+    )
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("username",)
+        
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        if self.cleaned_data["editor_key"] == "dummy_editor_key":
+            user.is_editor = True
+        else:
+            user.is_editor = False
+
+        if commit:
+            user.save()
+
+        return user
+        
+
 
