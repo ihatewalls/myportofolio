@@ -1,4 +1,4 @@
-    const { skillsUrl, deleteUrlTemplate, editUrlTemplate, editAccess, csrfToken } = window.APP_CONFIG;
+    const { skillsUrl, createSkillUrl, deleteUrlTemplate, editUrlTemplate, editAccess, csrfToken } = window.APP_CONFIG;
     const PLACEHOLDER = '00000000-0000-0000-0000-000000000000';
     const BASE_SKILLS_ENDPOINT = skillsUrl;
     const EDIT_ACCESS = editAccess;
@@ -45,9 +45,9 @@
             : '';
         // Card component
         const completeCardHtml = `
-            <h2>${skill.title}</h2>
-            <span class="universal-category">${skill.category}</span>
-            <p class="universal-description">${skill.description}</p>
+            <h2>${escapeHtml(skill.title)}</h2>
+            <span class="universal-category">${escapeHtml(skill.category)}</span>
+            <p class="universal-description">${escapeHtml(skill.description)}</p>
             <div class="universal-card-actions">
                 <div class="universal-actions">
                     ${editHtml}
@@ -113,6 +113,64 @@
         clearTimeout(searchDebounceTimer);
         searchSkills();
     });
+    function closeSkillModal() {
+        document.getElementById("add-skill-modal").hidePopover();
+    }
+    const CREATE_SKILL_ENDPOINT = createSkillUrl;
+    const skillForm = document.getElementById('universal-form');
 
+    // Read a cookie value, used to get the CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Send the form data to the server
+    async function addSkill(event) {
+        event.preventDefault();
+
+        const submitButton = skillForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(CREATE_SKILL_ENDPOINT, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: new FormData(skillForm),
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                skillForm.reset();
+                closeSkillModal();
+                showToast('Success', 'New skill added successfully!', 'success');
+                fetchSkills(searchInput.value.trim());
+            } else {
+                const errorMessages = result.errors
+                    ? Object.values(result.errors).flat().map(error => error.message)
+                    : [result.message || `Something went wrong (status ${response.status}).`];
+                showToast('Failed to add skill', errorMessages.join(' '), 'error');
+            }
+        } catch (error) {
+            console.error('Error adding skill:', error);
+            showToast('Failed to add skill', 'Could not reach the server. Please try again.', 'error');
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+
+    if (skillForm) {
+        skillForm.addEventListener('submit', addSkill);
+    }
     // Start the application
     fetchSkills(searchInput.value.trim());

@@ -12,6 +12,7 @@ from main.models import Experience, Skill
 from main.forms import SkillForm, ExperienceForm, UserForm
 from django.http import JsonResponse
 import datetime
+from django.views.decorators.http import require_POST
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'No active login session / Cookie not found')
@@ -32,6 +33,7 @@ def show_experience(request):
     context = {
         "name": "Ridho",
         "title": title_query,
+        "form": ExperienceForm(),
     }
     return render(request, "experience.html", context)
 
@@ -41,6 +43,7 @@ def show_skill(request):
     context = {
         "name": "Ridho",
         "title": title_query,
+        "form": SkillForm(),
         
     }
     return render(request, "skill.html", context)
@@ -240,3 +243,39 @@ def toggle_star(request, experience_id):
 
 def afk_page(request):
     return render(request, "afk.html")
+
+@require_POST
+def create_skill_ajax(request):
+    if not request.user.is_superuser and not request.user.is_editor:
+        return JsonResponse(
+            {"message": "Only those with edit access can add skills."},
+            status=403,
+        )
+
+    form = SkillForm(request.POST)
+    if form.is_valid():
+        skill = form.save()
+        return JsonResponse(
+            {"message": "Skill added successfully.", "pk": str(skill.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser and not request.user.is_editor:
+        return JsonResponse(
+            {"message": "Only those with edit access can add experiences."},
+            status=403,
+        )
+
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Experience added successfully.", "pk": str(experience.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)

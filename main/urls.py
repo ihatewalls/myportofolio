@@ -25,4 +25,6 @@ urlpatterns = [
     name="toggle_star",
     ),
     path("afk/", afk_page, name="afk_page"),
+    path("skill/add-ajax/", create_skill_ajax, name="create_skill_ajax"),
+    path("experience/add-ajax/", create_experience_ajax, name="create_experience_ajax"),
 ]

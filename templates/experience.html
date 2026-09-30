@@ -48,12 +48,21 @@
 <script>
   window.APP_CONFIG = {
     experiencesUrl: "{% url 'main:get_experience_json' %}",
+    createExperienceUrl: "{% url 'main:create_experience_ajax' %}",
     deleteUrlTemplate: "{% url 'main:delete_experience' '00000000-0000-0000-0000-000000000000' %}",
     starUrlTemplate: "{% url 'main:toggle_star' '00000000-0000-0000-0000-000000000000' %}",
     editUrlTemplate: "{% url 'main:edit_experience' experience_id='00000000-0000-0000-0000-000000000000' %}",
     editAccess: {% if user.is_superuser or user.is_editor %}true{% else %}false{% endif %},
     csrfToken: "{{ csrf_token }}"
   };
+  function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
 </script>
 <script src="/static/js/experiences.js"></script>
 {% endblock content %}

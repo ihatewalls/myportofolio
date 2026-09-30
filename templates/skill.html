@@ -49,11 +49,20 @@
 <script>
   window.APP_CONFIG = {
     skillsUrl: "{% url 'main:get_skills_json' %}",
+    createSkillUrl: "{% url 'main:create_skill_ajax' %}",
     deleteUrlTemplate: "{% url 'main:delete_skill' '00000000-0000-0000-0000-000000000000' %}",
     editUrlTemplate: "{% url 'main:edit_skills' skill_id='00000000-0000-0000-0000-000000000000' %}",
     editAccess: {% if user.is_superuser or user.is_editor %}true{% else %}false{% endif %},
     csrfToken: "{{ csrf_token }}"
   };
+  function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
 </script>
 <script src="/static/js/skills.js"></script>
 {% endblock content %}

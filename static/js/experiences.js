@@ -1,4 +1,4 @@
-    const { experiencesUrl, deleteUrlTemplate, starUrlTemplate, editUrlTemplate, editAccess, csrfToken } = window.APP_CONFIG;
+    const { experiencesUrl, createExperienceUrl, deleteUrlTemplate, starUrlTemplate, editUrlTemplate, editAccess, csrfToken } = window.APP_CONFIG;
     const PLACEHOLDER = '00000000-0000-0000-0000-000000000000';
     const BASE_EXPERIENCES_ENDPOINT = experiencesUrl;
     const EDIT_ACCESS = editAccess;
@@ -48,14 +48,14 @@
         const isStarredClass = experience.is_starred ? " is-starred" : "";
         const starText = experience.is_starred ? "Unstar" : "Star";
         const starTitle = experience.star_count > 0 
-            ? `Starred by ${experience.starred_by_names}` 
+            ? `Starred by ${escapeHtml(experience.starred_by_names)}` 
             : "Be the first to star";
 
         // Card component
         const completeCardHtml = `
-            <h2>${experience.title}</h2>
-            <span class="universal-category">${experience.category}</span>
-            <p class="universal-description">${experience.description}</p>
+            <h2>${escapeHtml(experience.title)}</h2>
+            <span class="universal-category">${escapeHtml(experience.category)}</span>
+            <p class="universal-description">${escapeHtml(experience.description)}</p>
             <div class="universal-card-actions">
                 <div class="universal-actions">
                     <form method="post" action="${starUrl}" class="star-form">
@@ -65,7 +65,7 @@
                                 title="${starTitle}">
                             <span aria-hidden="true">★</span>
                             ${starText}
-                            <span class="star-count">${experience.star_count}</span>
+                            <span class="star-count">${escapeHtml(experience.star_count)}</span>
                         </button>
                     </form>
                     ${editHtml}
@@ -121,7 +121,7 @@
         clearTimeout(searchDebounceTimer);
 
         searchDebounceTimer = setTimeout(function() {
-            searchSkills();
+            searchExperiences();
         }, SEARCH_DEBOUNCE_DELAY);
     });
 
@@ -131,4 +131,63 @@
         searchExperiences();
     });
     // Start the application
+    function closeExperienceModal() {
+        document.getElementById("add-experience-modal").hidePopover();
+    }
+    const CREATE_EXPERIENCE_ENDPOINT = createExperienceUrl;
+    const experienceForm = document.getElementById('universal-form');
+
+    // Read a cookie value, used to get the CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Send the form data to the server
+    async function addExperience(event) {
+        event.preventDefault();
+
+        const submitButton = experienceForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(CREATE_EXPERIENCE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: new FormData(experienceForm),
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                experienceForm.reset();
+                closeExperienceModal();
+                showToast('Success', 'New experience added successfully!', 'success');
+                fetchExperiences(searchInput.value.trim());
+            } else {
+                const errorMessages = result.errors
+                    ? Object.values(result.errors).flat().map(error => error.message)
+                    : [result.message || `Something went wrong (status ${response.status}).`];
+                showToast('Failed to add experience', errorMessages.join(' '), 'error');
+            }
+        } catch (error) {
+            console.error('Error adding experience:', error);
+            showToast('Failed to add experience', 'Could not reach the server. Please try again.', 'error');
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+
+    if (experienceForm) {
+        experienceForm.addEventListener('submit', addExperience);
+    }
     fetchExperiences(searchInput.value.trim());
