@@ -7,11 +7,12 @@
                 <div class="universal-header">
                     <h1>Experience</h1>
                     {% if user.is_superuser or user.is_editor %}
-                    <a href="{% url 'main:create_experience' %}"
-                       class="button universal-add-button">
+                    <button type="button"
+                            class="button skill-add-button"
+                            popovertarget="add-experience-modal">
                         <span aria-hidden="true">+</span>
-                        Tambah Experience
-                    </a>
+                        Add Experience
+                    </button>
                     {% endif %}
                 </div>
                 <form id="universal-search-form" class="universal-search">
@@ -41,6 +42,9 @@
             </div>
         </section>
     </main>
+{% if user.is_superuser or user.is_editor %}
+    {% include "components/experience_form_modal.html" %}
+{% endif %}
 <script>
   window.APP_CONFIG = {
     experiencesUrl: "{% url 'main:get_experience_json' %}",

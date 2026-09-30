@@ -7,11 +7,12 @@
                 <div class="universal-header">
                     <h1>Skills</h1>
                     {% if user.is_superuser or user.is_editor %}
-                    <a href="{% url 'main:create_skill' %}"
-                       class="button universal-add-button">
+                    <button type="button"
+                            class="button skill-add-button"
+                            popovertarget="add-skill-modal">
                         <span aria-hidden="true">+</span>
-                        Tambah Skill
-                    </a>
+                        Add Skill
+                    </button>
                     {% endif %}
                 </div>
                 <form id="universal-search-form" class="universal-search">
@@ -42,6 +43,9 @@
             </div>
         </section>
     </main>
+{% if user.is_superuser or user.is_editor %}
+    {% include "components/skill_form_modal.html" %}
+{% endif %}
 <script>
   window.APP_CONFIG = {
     skillsUrl: "{% url 'main:get_skills_json' %}",
