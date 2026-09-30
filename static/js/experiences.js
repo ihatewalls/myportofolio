@@ -42,7 +42,7 @@
             </form>`
             : '';
         const editHtml = EDIT_ACCESS
-            ? '<a href="${editUrl}" class="button universal-add-button"><span aria-hidden="true">+</span>Edit Experience</a>'
+            ? `<a href='${editUrl}' class='button universal-add-button'><span aria-hidden='true'>+</span>Edit Experience</a>`
             : '';
         const isStarredClass = experience.is_starred ? " is-starred" : "";
         const starText = experience.is_starred ? "Unstar" : "Star";
