@@ -96,9 +96,22 @@
     }
 
     // Search form event handler
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent the page from reloading
-        fetchSkills(searchInput.value.trim()); // Run the search via AJAX
+    function searchSkills() {
+        fetchSkills(searchInput.value.trim());
+    }
+
+    searchInput.addEventListener("input", function() {
+        clearTimeout(searchDebounceTimer);
+
+        searchDebounceTimer = setTimeout(function() {
+            searchSkills();
+        }, SEARCH_DEBOUNCE_DELAY);
+    });
+
+    searchForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        clearTimeout(searchDebounceTimer);
+        searchSkills();
     });
 
     // Start the application

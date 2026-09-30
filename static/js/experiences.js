@@ -13,7 +13,8 @@
     const gridContainer = document.getElementById('grid');
     const searchForm = document.getElementById('universal-search-form');
     const searchInput = document.getElementById('search-input');
-
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
     // Show/hide page sections
     function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
         loadingState.classList.toggle('hide', !showLoading);
@@ -112,11 +113,22 @@
         }
     }
 
-    // Search form event handler
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent the page from reloading
-        fetchExperiences(searchInput.value.trim()); // Run the search via AJAX
+    function searchExperiences() {
+        fetchExperiences(searchInput.value.trim());
+    }
+
+    searchInput.addEventListener("input", function() {
+        clearTimeout(searchDebounceTimer);
+
+        searchDebounceTimer = setTimeout(function() {
+            searchSkills();
+        }, SEARCH_DEBOUNCE_DELAY);
     });
 
+    searchForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        clearTimeout(searchDebounceTimer);
+        searchExperiences();
+    });
     // Start the application
     fetchExperiences(searchInput.value.trim());
