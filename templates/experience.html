@@ -14,54 +14,42 @@
                     </a>
                     {% endif %}
                 </div>
-                <form method="get"
-                      action="{% url 'main:show_experience' %}"
-                      class="universal-search">
+                <form id="universal-search-form" class="universal-search">
                     <input type="search"
+                           id="search-input"
                            name="title"
                            value="{{ title_query }}"
-                           placeholder="Cari berdasarkan nama experience"
+                           placeholder="Search by universal name"
                            class="universal-search__input"
-                           aria-label="Cari berdasarkan nama experience">
-                    <button type="submit" class="button">Cari</button>
+                           aria-label="Search by universal name">
+                    <button type="submit" class="button">Search</button>
                 </form>
-                <div class="universal-grid">
-                    {% for experience in experience_list %}
-                        <article class="universal-card">
-                            <span class="universal-category">
-                                {{ experience.get_category_display }}
-                            </span>
-                            <h2>{{ experience.title }}</h2>
-                            <p class="universal-description">
-                                {{ experience.description }}
-                            </p>
 
-                            {% if experience.is_ongoing %}
-                                <p class="universal-status">Ongoing</p>
-                            {% else %}
-                                <p class="universal-status">Completed</p>
-                            {% endif %}
-                            <div class="universal-card-actions">
-                                <div class="universal-actions">
-                                    {% include "components/experience_star.html" with experience=experience %}
-                                    {% if user.is_superuser or user.is_editor %}
-                                    {% include "components/experience_delete_model.html" with experience=experience %}
-                                    <a href="{% url 'main:edit_experience' experience_id=experience.id %}"
-                                        class="button universal-add-button">
-                                        <span aria-hidden="true">+</span>
-                                        Edit Experience
-                                    </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </article>
-                    {% empty %}
-                        <p class="empty-state">
-                            No experience has been added yet.
-                        </p>
-                    {% endfor %}
+                <div id="loading" class="empty-state hide">
+                    <p>Loading experiencess...</p>
                 </div>
+
+                <div id="error" class="empty-state hide">
+                    <p>Failed to load experience data. Please try again.</p>
+                </div>
+
+                <div id="empty" class="empty-state hide">
+                    <p>No experiences have been added or found yet.</p>
+                </div>
+
+                <div id="grid" class="universal-grid hide"></div>
             </div>
         </section>
     </main>
+<script>
+  window.APP_CONFIG = {
+    experiencesUrl: "{% url 'main:get_experience_json' %}",
+    deleteUrlTemplate: "{% url 'main:delete_experience' '00000000-0000-0000-0000-000000000000' %}",
+    starUrlTemplate: "{% url 'main:toggle_star' '00000000-0000-0000-0000-000000000000' %}",
+    editUrlTemplate: "{% url 'main:edit_experience' experience_id='00000000-0000-0000-0000-000000000000' %}",
+    editAccess: {% if user.is_superuser or user.is_editor %}true{% else %}false{% endif %},
+    csrfToken: "{{ csrf_token }}"
+  };
+</script>
+<script src="/static/js/experiences.js"></script>
 {% endblock content %}

@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from main.models import Experience, Skill
 from main.forms import SkillForm, ExperienceForm, UserForm
+from django.http import JsonResponse
 import datetime
 
 def show_main(request):
@@ -27,34 +28,18 @@ def show_main(request):
 
 
 def show_experience(request):
-    json_response = get_experience_json(request)
-    
-    experiences = serializers.deserialize(
-            "json",
-            json_response.content.decode("utf-8"),
-        )
-    experiences = [experience.object for experience in experiences]
     title_query = request.GET.get("title", "").strip()
     context = {
         "name": "Ridho",
-        "experience_list": experiences,
         "title": title_query,
     }
     return render(request, "experience.html", context)
 
 def show_skill(request):
-    json_response = get_skills_json(request)
-
-    skills = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    skills = [skill.object for skill in skills]
     title_query = request.GET.get("title", "").strip()
 
     context = {
         "name": "Ridho",
-        "skill_list": skills,
         "title": title_query,
         
     }
@@ -84,8 +69,18 @@ def get_skills_json(request):
     if title_query:
         skills = skills.filter(title__icontains=title_query)
 
-    skills_json = serializers.serialize("json", skills, use_natural_foreign_keys=True)
-    return HttpResponse(skills_json, content_type="application/json")
+    data = []
+    for skill in skills:
+        data.append({
+            "pk": str(skill.id),
+            "fields": {
+                "title": skill.title,
+                "description": skill.description,
+                "category": skill.category,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login/")
 def delete_skill(request, skill_id):
@@ -119,13 +114,30 @@ def create_experience(request):
 
 def get_experience_json(request):
     title_query = request.GET.get("title", "").strip()
-    experience = Experience.objects.all()
+    experiences = Experience.objects.prefetch_related('starred_by').all()
 
     if title_query:
-        experience = experience.filter(title__icontains=title_query)
+        experiences = experiences.filter(title__icontains=title_query)
 
-    skills_json = serializers.serialize("json", experience, use_natural_foreign_keys=True)
-    return HttpResponse(skills_json, content_type="application/json")
+    data = []
+    
+    for experience in experiences:
+        starred_users = experience.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+        data.append({
+            "pk": str(experience.id),
+            "fields": {
+                "title": experience.title,
+                "description": experience.description,
+                "category": experience.category,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login/")
 def delete_experience(request, experience_id):
