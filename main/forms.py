@@ -3,6 +3,7 @@ from django.forms import TextInput, Textarea, ModelForm, URLInput
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.utils.html import strip_tags
 class SkillForm(ModelForm):
     class Meta:
@@ -106,7 +107,7 @@ class UserForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
 
-        if self.cleaned_data["editor_key"] == "dummy_editor_key":
+        if self.cleaned_data["editor_key"] == settings.EDITOR_KEY:
             user.is_editor = True
         else:
             user.is_editor = False

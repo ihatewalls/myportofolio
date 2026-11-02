@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'portofolio.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
+EDITOR_KEY = os.getenv("EDITOR_KEY")
 if PRODUCTION:
     DATABASES = {
         'default': {
