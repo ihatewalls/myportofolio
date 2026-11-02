@@ -52,9 +52,6 @@ class Skill(models.Model):
         max_length=20,
         choices=SKILL_CHOICES,
     )
-    starred_by = models.ManyToManyField(
-        User, related_name="starred_skill", blank=True
-    )
 
     def __str__(self):
         return self.title
