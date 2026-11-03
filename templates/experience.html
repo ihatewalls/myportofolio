@@ -45,24 +45,17 @@
 {% if user.is_superuser or user.is_editor %}
     {% include "components/experience_form_modal.html" %}
 {% endif %}
+{% csrf_token %}
 <script>
   window.APP_CONFIG = {
-    experiencesUrl: "{% url 'main:get_experience_json' %}",
-    createExperienceUrl: "{% url 'main:create_experience_ajax' %}",
-    deleteUrlTemplate: "{% url 'main:delete_experience' '00000000-0000-0000-0000-000000000000' %}",
-    starUrlTemplate: "{% url 'main:toggle_star' '00000000-0000-0000-0000-000000000000' %}",
-    editUrlTemplate: "{% url 'main:edit_experience' experience_id='00000000-0000-0000-0000-000000000000' %}",
+    experiencesUrl: "{% url 'api:experience-list' %}",
+    detailUrl: "{% url 'api:experience-detail' '00000000-0000-0000-0000-000000000000' %}",
+    starUrl: "{% url 'api:experience-star' '00000000-0000-0000-0000-000000000000' %}",
+    loginUrl: "{% url 'main:login' %}",
     editAccess: {% if user.is_superuser or user.is_editor %}true{% else %}false{% endif %},
-    csrfToken: "{{ csrf_token }}"
+    superAccess: {% if user.is_superuser %}true{% else %}false{% endif %},
+    authenticated: {% if user.is_authenticated %}true{% else %}false{% endif %},
   };
-  function escapeHtml(value) {
-        return String(value ?? '')
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
-    }
 </script>
 <script src="/static/js/experiences.js"></script>
 {% endblock content %}
