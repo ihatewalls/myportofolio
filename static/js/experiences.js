@@ -51,7 +51,7 @@
             data-action="star" data-id="${escapeHtml(experience.id)}"
             title="${escapeHtml(experience.starred_by_names)}">
             ${experience.is_starred ? 'Unstar' : 'Star'} (${experience.star_count})</button>`
-        : `${loginUrl}" class="button">Login to star (${experience.star_count})</a>`;
+        : `<a href="${loginUrl}" class="button">Login to star (${experience.star_count})</a>`;
 
         const remove = IS_SUPERUSER
         ? `<button type="button" class="button button-danger" data-action="delete"
