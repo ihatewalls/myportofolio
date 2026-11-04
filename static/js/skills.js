@@ -1,10 +1,11 @@
-    const { skillsUrl, createSkillUrl, deleteUrlTemplate, editUrlTemplate, editAccess, csrfToken } = window.APP_CONFIG;
-    const PLACEHOLDER = '00000000-0000-0000-0000-000000000000';
+    const { skillsUrl, detailUrl,  loginUrl, editAccess, superAccess, authenticated } = window.APP_CONFIG;
+    const PLACEHOLDER = '00000000-0000-0000-0000-000000000000'
     const BASE_SKILLS_ENDPOINT = skillsUrl;
     const EDIT_ACCESS = editAccess;
+    const DETAIL_SKILL_ENDPOINT = detailUrl;
+    const IS_SUPERUSER = superAccess;
+    const IS_AUTHENTICATED = authenticated;
     let skillsAbortController;
-
-    const csrfInput = `<input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">`;
 
     // DOM elements
     const loadingState = document.getElementById('loading');
@@ -13,7 +14,8 @@
     const gridContainer = document.getElementById('grid');
     const searchForm = document.getElementById('universal-search-form');
     const searchInput = document.getElementById('search-input');
-
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
     // Show/hide page sections
     function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
         loadingState.classList.toggle('hide', !showLoading);
@@ -21,43 +23,35 @@
         emptyState.classList.toggle('hide', !showEmpty);
         gridContainer.classList.toggle('hide', !showGrid);
     }
-
+    function escapeHtml(value) {
+        return String(value ?? '').replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+    }
+    function getCookie(name) {
+        const prefix = `${name}=`;
+        const cookie = document.cookie.split(';').map(value => value.trim())
+            .find(value => value.startsWith(prefix));
+        return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+    }
+    function skillEndpoint(pattern, id) {
+        return pattern.replace(PLACEHOLDER, id);
+    }
     // Build a skill card element
-    function buildSkillCardElement(item) {
-        const skill = item.fields;
-        const skillId = item.pk;
+    function buildSkillCardElement(skill) {
+        const article = document.createElement('article');
+        article.className = 'universal-card';
 
-        const articleElement = document.createElement('article');
-        articleElement.className = 'universal-card';
+        const remove = IS_SUPERUSER
+        ? `<button type="button" class="button button-danger" data-action="delete"
+            data-id="${escapeHtml(skill.id)}">Delete</button>` : '';
 
-
-        // A dummy UUID used as a placeholder to be replaced with the real ID from the JSON data
-        const deleteUrl = deleteUrlTemplate.replace(PLACEHOLDER, skillId);
-        const editUrl = editUrlTemplate.replace(PLACEHOLDER, skillId);
-        const deleteHtml = EDIT_ACCESS 
-            ? `<form method="post" action="${deleteUrl}" style="display:inline;">
-                ${csrfInput}
-                <button type="submit" class="button button-danger" onclick="return confirm('Are you sure you want to delete this skill?');">Delete</button>
-            </form>`
-            : '';
-        const editHtml = EDIT_ACCESS
-            ? `<a href='${editUrl}' class='button universal-add-button'><span aria-hidden='true'>+</span>Edit Skill</a>`
-            : '';
-        // Card component
-        const completeCardHtml = `
-            <h2>${escapeHtml(skill.title)}</h2>
+        article.innerHTML = `<h2>${escapeHtml(skill.title)}</h2>
             <span class="universal-category">${escapeHtml(skill.category)}</span>
             <p class="universal-description">${escapeHtml(skill.description)}</p>
-            <div class="universal-card-actions">
-                <div class="universal-actions">
-                    ${editHtml}
-                    ${deleteHtml}
-                </div>
-            </div>
-        `;
-
-        articleElement.innerHTML = completeCardHtml;
-        return articleElement;
+            <div class="universal-card-actions"><div class="universal-actions">
+            ${remove}</div></div>`;
+        return article;
     }
 
     // Fetch skill data
@@ -67,73 +61,45 @@
 
         try {
             displayPageSection({ showLoading: true });
-            
-            const url = searchQuery ? `${BASE_SKILLS_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_SKILLS_ENDPOINT;
-            
+            const url = new URL(BASE_SKILLS_ENDPOINT, window.location.origin);
+            if (searchQuery) url.searchParams.set('title', searchQuery);
             const response = await fetch(url, {
-                headers: { 'Accept': 'application/json' },
+                headers: { Accept: 'application/json' },
                 signal: skillsAbortController.signal,
             });
-
-            if (!response.ok) throw new Error('Failed to fetch data');
-
-            const skillData = await response.json();
-
-            if (skillData.length === 0) {
-                displayPageSection({ showEmpty: true });
-            } else {
-                gridContainer.innerHTML = '';
-                skillData.forEach(item => {
-                    gridContainer.appendChild(buildSkillCardElement(item));
-                });
-                displayPageSection({ showGrid: true });
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const skills = await response.json();
+            gridContainer.replaceChildren(...skills.map(buildSkillCardElement));
+            displayPageSection({ showGrid: skills.length > 0, showEmpty: skills.length === 0 });
         } catch (error) {
             if (error.name === 'AbortError') return;
             console.error('Error loading skills:', error);
             displayPageSection({ showError: true });
         }
     }
-
-    // Search form event handler
-    function searchSkills() {
-        fetchSkills(searchInput.value.trim());
+    function apiErrorMessage(data, status) {
+        const messages = Object.values(data).flat().filter(value => typeof value === 'string');
+        return messages.join(' ') || `Request failed (HTTP ${status}).`;
     }
-
-    searchInput.addEventListener("input", function() {
-        clearTimeout(searchDebounceTimer);
-
-        searchDebounceTimer = setTimeout(function() {
-            searchSkills();
-        }, SEARCH_DEBOUNCE_DELAY);
-    });
-
-    searchForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        clearTimeout(searchDebounceTimer);
-        searchSkills();
-    });
+    async function writeSkill(url, method, payload) {
+        const response = await fetch(url, {
+            method,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: payload === undefined ? undefined : JSON.stringify(payload),
+        });
+        if (response.status === 204) return null;
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(apiErrorMessage(data, response.status));
+        return data;
+    }
     function closeSkillModal() {
         document.getElementById("add-skill-modal").hidePopover();
     }
-    const CREATE_SKILL_ENDPOINT = createSkillUrl;
     const skillForm = document.getElementById('universal-form');
-
-    // Read a cookie value, used to get the CSRF token
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     // Send the form data to the server
     async function addSkill(event) {
@@ -143,27 +109,17 @@
         submitButton.disabled = true;
 
         try {
-            const response = await fetch(CREATE_SKILL_ENDPOINT, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCookie('csrftoken') },
-                body: new FormData(skillForm),
-            });
-            const result = await response.json().catch(() => ({}));
-
-            if (response.ok) {
-                skillForm.reset();
-                closeSkillModal();
-                showToast('Success', 'New skill added successfully!', 'success');
-                fetchSkills(searchInput.value.trim());
-            } else {
-                const errorMessages = result.errors
-                    ? Object.values(result.errors).flat().map(error => error.message)
-                    : [result.message || `Something went wrong (status ${response.status}).`];
-                showToast('Failed to add skill', errorMessages.join(' '), 'error');
-            }
+            const fields = new FormData(skillForm);
+            const payload = Object.fromEntries([
+                'title', 'description', 'category',
+            ].map(name => [name, fields.get(name)]));
+            await writeSkill(BASE_SKILLS_ENDPOINT, 'POST', payload);
+            skillForm.reset();
+            document.getElementById('add-skill-modal').hidePopover();
+            showToast('Success', 'Skill created.', 'success');
+            await fetchSkills(searchInput.value.trim());
         } catch (error) {
-            console.error('Error adding skill:', error);
-            showToast('Failed to add skill', 'Could not reach the server. Please try again.', 'error');
+            showToast('Could not create skill', error.message, 'error');
         } finally {
             submitButton.disabled = false;
         }
@@ -172,5 +128,31 @@
     if (skillForm) {
         skillForm.addEventListener('submit', addSkill);
     }
+    gridContainer.addEventListener('click', async function(event) {
+        const button = event.target.closest('button[data-action]');
+        if (!button || button.disabled) return;
+        const action = button.dataset.action;
+        if (action === 'delete' && !window.confirm('Delete this skill?')) return;
+        button.disabled = true;
+        try {
+            const pattern = action === DETAIL_SKILL_ENDPOINT;
+            await writeSkill(skillEndpoint(pattern, button.dataset.id), 'DELETE');
+            showToast('Success', 'Skill deleted.', 'success');
+            await fetchSkills(searchInput.value.trim());
+        } catch (error) {
+            showToast('Request failed', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+    });
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => fetchSkills(searchInput.value.trim()), 300);
+    });
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        clearTimeout(searchDebounceTimer);
+        fetchSkills(searchInput.value.trim());
+    });
     // Start the application
     fetchSkills(searchInput.value.trim());

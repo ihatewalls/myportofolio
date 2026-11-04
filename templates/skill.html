@@ -46,23 +46,16 @@
 {% if user.is_superuser or user.is_editor %}
     {% include "components/skill_form_modal.html" %}
 {% endif %}
+{% csrf_token %}
 <script>
   window.APP_CONFIG = {
-    skillsUrl: "{% url 'main:get_skills_json' %}",
-    createSkillUrl: "{% url 'main:create_skill_ajax' %}",
-    deleteUrlTemplate: "{% url 'main:delete_skill' '00000000-0000-0000-0000-000000000000' %}",
-    editUrlTemplate: "{% url 'main:edit_skills' skill_id='00000000-0000-0000-0000-000000000000' %}",
+    skillsUrl: "{% url 'api:skill-list' %}",
+    detailUrl: "{% url 'api:skill-detail' '00000000-0000-0000-0000-000000000000' %}",
+    loginUrl: "{% url 'main:login' %}",
     editAccess: {% if user.is_superuser or user.is_editor %}true{% else %}false{% endif %},
-    csrfToken: "{{ csrf_token }}"
+    superAccess: {% if user.is_superuser %}true{% else %}false{% endif %},
+    authenticated: {% if user.is_authenticated %}true{% else %}false{% endif %},
   };
-  function escapeHtml(value) {
-        return String(value ?? '')
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
-    }
 </script>
 <script src="/static/js/skills.js"></script>
 {% endblock content %}
