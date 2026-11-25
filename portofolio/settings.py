@@ -160,8 +160,8 @@ CSRF_TRUSTED_ORIGINS = ["https://musthofa-ridho-myportofolio.pws.cs.ui.ac.id"]
 AUTH_USER_MODEL = 'main.User'
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "TokenAuthentication", 
-        "SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication", 
+        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 CORS_ALLOW_ALL_ORIGINS = True
