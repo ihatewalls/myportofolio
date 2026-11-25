@@ -44,12 +44,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     "rest_framework",
+    "rest_framework.authtoken",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -155,3 +158,10 @@ MAILERS = {
 
 CSRF_TRUSTED_ORIGINS = ["https://musthofa-ridho-myportofolio.pws.cs.ui.ac.id"]
 AUTH_USER_MODEL = 'main.User'
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "TokenAuthentication", 
+        "SessionAuthentication",
+    ],
+}
+CORS_ALLOW_ALL_ORIGINS = True
