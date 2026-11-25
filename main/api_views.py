@@ -105,3 +105,10 @@ def skill_detail(request, skill_id):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def api_logout(request):
+    if request.auth:
+        request.auth.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT);
